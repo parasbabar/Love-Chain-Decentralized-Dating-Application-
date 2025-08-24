@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaMatch - Blockchain Dating App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        :root {
+            --primary: #fd2f7e;
+            --secondary: #8a3ab9;
+            --dark: #1a1a1a;
+            --light: #f8f8f8;
+            --gray: #dbdbdb;
+            --text: #262626;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            transition: margin-right 0.3s ease;
+        }
+
+        body.messages-open {
+            margin-right: 350px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-large {
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main App Container */
+        .app-container {
+            display: flex;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        /* Feed Styles */
+        .feed {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stories {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+        }
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            margin-bottom: 5px;
+        }
+
+        .story-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .story-username {
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .post {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .post-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .post-username {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .post-more {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .post-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            padding: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .post-action {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .post-action.save {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .post-likes {
+            padding: 0 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .post-caption {
+            padding: 0 12px;
+            margin-bottom: 10px;
+        }
+
+        .post-caption strong {
+            margin-right: 5px;
+        }
+
+        .post-comments {
+            padding: 5px 12px;
+            color: #8e8e8e;
+            border-top: 1px solid var(--gray);
+        }
+
+        .post-add-comment {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid var(--gray);
+        }
+
+        .post-add-comment input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 5px;
+            font-size: 0.9rem;
+        }
+
+        .post-add-comment button {
+            color: var(--primary);
+            font-weight: 600;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            flex: 1;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 3px solid var(--primary);
+        }
+
+        .profile-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .profile-bio {
+            color: #8e8e8e;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .profile-stat-label {
+            font-size: 0.8rem;
+            color: #8e8e8e;
+        }
+
+        .suggestions {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestions-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .suggestions-title {
+            font-weight: 600;
+            color: #8e8e8e;
+        }
+
+        .suggestions-see-all {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .suggestion {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .suggestion-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .suggestion-info {
+            flex: 1;
+        }
+
+        .suggestion-username {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .suggestion-mutual {
+            font-size: 0.8rem;
+            color: #8e8e8e;
+        }
+
+        .suggestion-follow {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Wallet Connect Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .wallet-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .wallet-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--gray);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wallet-option:hover {
+            background-color: #f9f9f9;
+        }
+
+        .wallet-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+
+        .wallet-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .wallet-info p {
+            font-size: 0.8rem;
+            color: #8e8e8e;
+        }
+
+        /* NFT Badges */
+        .nft-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .nft-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+        }
+
+        .nft-verified {
+            background-color: var(--primary);
+        }
+
+        .nft-green {
+            background-color: var(--success);
+        }
+
+        .nft-red {
+            background-color: var(--danger);
+        }
+
+        /* Emergency SOS Button */
+        .sos-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--danger);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+            cursor: pointer;
+            z-index: 99;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 20px rgba(244, 67, 54, 0.6);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+            }
+        }
+
+        /* Messages Sidebar */
+        .messages-sidebar {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 101;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages-sidebar.open {
+            right: 0;
+        }
+
+        .messages-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .messages-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .close-messages {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .messages-search {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .messages-search input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--gray);
+            outline: none;
+        }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--gray);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .message-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .message-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .message-info {
+            flex: 1;
+        }
+
+        .message-user {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .message-preview {
+            font-size: 0.9rem;
+            color: #8e8e8e;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: #8e8e8e;
+            margin-top: 5px;
+        }
+
+        .message-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
+            margin-left: 10px;
+        }
+
+        .message-status.unread {
+            background-color: var(--primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .sidebar {
+                order: -1;
+                margin-bottom: 20px;
+            }
+
+            .messages-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+
+            body.messages-open {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-heart"></i> LoveChain
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-search"></i> Explore</a></li>
+                    <li><a href="#" onclick="toggleMessages(); return false;"><i class="fas fa-comment"></i> Messages</a></li>
+                    <li><a href="#"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="#" class="blind-btn">Blind Dates</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-secondary" onclick="showWalletConnect()">Connect Wallet</a>
+                    <a href="#" class="btn btn-primary" onclick="showProfile()">Create Profile</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="app-container">
+            <!-- Feed -->
+            <div class="feed">
+                <!-- Stories -->
+                <div class="stories">
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://i.pravatar.cc/150?img=1" alt="User">
+                        </div>
+                        <span class="story-username">sarahj</span>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://i.pravatar.cc/150?img=2" alt="User">
+                        </div>
+                        <span class="story-username">mike_t</span>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://i.pravatar.cc/150?img=3" alt="User">
+                        </div>
+                        <span class="story-username">jess_22</span>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://i.pravatar.cc/150?img=4" alt="User">
+                        </div>
+                        <span class="story-username">dave_w</span>
+                    </div>
+                    <div class="story">
+                        <div class="story-avatar">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="User">
+                        </div>
+                        <span class="story-username">emma_k</span>
+                    </div>
+                </div>
+
+                <!-- Posts -->
+                <div class="post">
+                    <div class="post-header">
+                        <img src="https://i.pravatar.cc/150?img=6" alt="User" class="post-avatar">
+                        <div class="post-username">jenniferl</div>
+                        <div class="post-more"><i class="fas fa-ellipsis-h"></i></div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Post" class="post-image">
+                    <div class="post-actions">
+                        <div class="post-action"><i class="far fa-heart"></i></div>
+                        <div class="post-action"><i class="far fa-comment"></i></div>
+                        <div class="post-action"><i class="far fa-paper-plane"></i></div>
+                        <div class="post-action save"><i class="far fa-bookmark"></i></div>
+                    </div>
+                    <div class="post-likes">1,234 likes</div>
+                    <div class="post-caption">
+                        <strong>jenniferl</strong> Enjoying a beautiful day at the beach! ☀🏖 #summer #beachdays
+                    </div>
+                    <div class="post-comments">View all 124 comments</div>
+                    <div class="post-add-comment">
+                        <input type="text" placeholder="Add a comment...">
+                        <button>Post</button>
+                    </div>
+                </div>
+
+                <div class="post">
+                    <div class="post-header">
+                        <img src="https://i.pravatar.cc/150?img=7" alt="User" class="post-avatar">
+                        <div class="post-username">alexander_m</div>
+                        <div class="post-more"><i class="fas fa-ellipsis-h"></i></div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" alt="Post" class="post-image">
+                    <div class="post-actions">
+                        <div class="post-action"><i class="far fa-heart"></i></div>
+                        <div class="post-action"><i class="far fa-comment"></i></div>
+                        <div class="post-action"><i class="far fa-paper-plane"></i></div>
+                        <div class="post-action save"><i class="far fa-bookmark"></i></div>
+                    </div>
+                    <div class="post-likes">2,145 likes</div>
+                    <div class="post-caption">
+                        <strong>alexander_m</strong> Hiking adventures! 🏔 Nothing like the view from the top. #hiking #mountains #adventure
+                    </div>
+                    <div class="post-comments">View all 98 comments</div>
+                    <div class="post-add-comment">
+                        <input type="text" placeholder="Add a comment...">
+                        <button>Post</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <img src="https://i.pravatar.cc/150?img=8" alt="Profile" class="profile-avatar">
+                    <h2 class="profile-name">johndoe</h2>
+                    <p class="profile-bio">Digital artist & photography enthusiast. Love hiking and coffee.</p>
+                    
+                    <div class="nft-badges">
+                        <div class="nft-badge nft-verified" title="Verified Profile NFT"><i class="fas fa-check"></i></div>
+                        <div class="nft-badge nft-green" title="12 Green Flags"><i class="fas fa-flag"></i></div>
+                        <div class="nft-badge nft-red" title="2 Red Flags"><i class="fas fa-flag"></i></div>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <div class="profile-stat-value">245</div>
+                            <div class="profile-stat-label">Posts</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="profile-stat-value">3.2K</div>
+                            <div class="profile-stat-label">Followers</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="profile-stat-value">1.1K</div>
+                            <div class="profile-stat-label">Following</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-large">Edit Profile</button>
+                </div>
+
+                <!-- Suggestions -->
+                <div class="suggestions">
+                    <div class="suggestions-header">
+                        <div class="suggestions-title">Suggestions For You</div>
+                        <a href="#" class="suggestions-see-all">See All</a>
+                    </div>
+                    
+                    <div class="suggestion">
+                        <img src="https://i.pravatar.cc/150?img=9" alt="User" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <div class="suggestion-username">sophia_r</div>
+                            <div class="suggestion-mutual">3 mutual interests</div>
+                        </div>
+                        <div class="suggestion-follow">Follow</div>
+                    </div>
+                    
+                    <div class="suggestion">
+                        <img src="https://i.pravatar.cc/150?img=10" alt="User" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <div class="suggestion-username">david_m</div>
+                            <div class="suggestion-mutual">2 mutual friends</div>
+                        </div>
+                        <div class="suggestion-follow">Follow</div>
+                    </div>
+                    
+                    <div class="suggestion">
+                        <img src="https://i.pravatar.cc/150?img=11" alt="User" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <div class="suggestion-username">lisa_k</div>
+                            <div class="suggestion-mutual">4 mutual interests</div>
+                        </div>
+                        <div class="suggestion-follow">Follow</div>
+                    </div>
+                    
+                    <div class="suggestion">
+                        <img src="https://i.pravatar.cc/150?img=12" alt="User" class="suggestion-avatar">
+                        <div class="suggestion-info">
+                            <div class="suggestion-username">matt_j</div>
+                            <div class="suggestion-mutual">1 mutual friend</div>
+                        </div>
+                        <div class="suggestion-follow">Follow</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Sidebar -->
+    <div class="messages-sidebar" id="messagesSidebar">
+        <div class="messages-header">
+            <h2>Messages</h2>
+            <button class="close-messages" onclick="toggleMessages()">&times;</button>
+        </div>
+        <div class="messages-search">
+            <input type="text" placeholder="Search messages...">
+        </div>
+        <div class="messages-list">
+            <div class="message-item">
+                <img src="https://i.pravatar.cc/150?img=13" alt="User" class="message-avatar">
+                <div class="message-info">
+                    <div class="message-user">sarahj</div>
+                    <div class="message-preview">Hey! How are you doing?</div>
+                    <div class="message-time">2 hours ago</div>
+                </div>
+                <div class="message-status unread"></div>
+            </div>
+            <div class="message-item">
+                <img src="https://i.pravatar.cc/150?img=14" alt="User" class="message-avatar">
+                <div class="message-info">
+                    <div class="message-user">mike_t</div>
+                    <div class="message-preview">Are we still meeting tomorrow?</div>
+                    <div class="message-time">5 hours ago</div>
+                </div>
+                <div class="message-status"></div>
+            </div>
+            <div class="message-item">
+                <img src="https://i.pravatar.cc/150?img=15" alt="User" class="message-avatar">
+                <div class="message-info">
+                    <div class="message-user">jess_22</div>
+                    <div class="message-preview">I had a great time yesterday!</div>
+                    <div class="message-time">Yesterday</div>
+                </div>
+                <div class="message-status"></div>
+            </div>
+            <div class="message-item">
+                <img src="https://i.pravatar.cc/150?img=16" alt="User" class="message-avatar">
+                <div class="message-info">
+                    <div class="message-user">dave_w</div>
+                    <div class="message-preview">Check out this new restaurant</div>
+                    <div class="message-time">2 days ago</div>
+                </div>
+                <div class="message-status"></div>
+            </div>
+            <div class="message-item">
+                <img src="https://i.pravatar.cc/150?img=17" alt="User" class="message-avatar">
+                <div class="message-info">
+                    <div class="message-user">emma_k</div>
+                    <div class="message-preview">Thanks for the recommendation!</div>
+                    <div class="message-time">3 days ago</div>
+                </div>
+                <div class="message-status"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Connect Modal -->
+    <div id="walletModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('walletModal')">&times;</span>
+            <h2>Connect Your Wallet</h2>
+            <p>Connect with one of our available wallet providers to create your dating profile NFT.</p>
+            
+            <div class="wallet-options">
+                <div class="wallet-option">
+                    <div class="wallet-icon"><i class="fas fa-wallet"></i></div>
+                    <div class="wallet-info">
+                        <h3>Petra Wallet</h3>
+                        <p>Connect using your Aptos wallet</p>
+                    </div>
+                </div>
+                
+                <div class="wallet-option">
+                    <div class="wallet-icon"><i class="fab fa-ethereum"></i></div>
+                    <div class="wallet-info">
+                        <h3>MetaMask</h3>
+                        <p>Connect using your Ethereum wallet</p>
+                    </div>
+                </div>
+                
+                <div class="wallet-option">
+                    <div class="wallet-icon"><i class="fas fa-qrcode"></i></div>
+                    <div class="wallet-info">
+                        <h3>WalletConnect</h3>
+                        <p>Scan QR code with your mobile wallet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency SOS Button -->
+    <div class="sos-button" onclick="triggerSOS()">
+        <i class="fas fa-exclamation"></i>
+    </div>
+
+    <script>
+        // Modal functions
+        function showWalletConnect() {
+            document.getElementById('walletModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showProfile() {
+            alert('Profile creation would be initiated after wallet connection');
+            showWalletConnect();
+        }
+
+        // Toggle messages sidebar
+        function toggleMessages() {
+            const sidebar = document.getElementById('messagesSidebar');
+            const body = document.body;
+            
+            sidebar.classList.toggle('open');
+            body.classList.toggle('messages-open');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Toggle like button
+        document.querySelectorAll('.post-action .fa-heart').forEach(heart => {
+            heart.addEventListener('click', function() {
+                this.classList.toggle('far');
+                this.classList.toggle('fas');
+                this.style.color = this.classList.contains('fas') ? '#fd2f7e' : '';
+            });
+        });
+
+        // Toggle save button
+        document.querySelectorAll('.post-action .fa-bookmark').forEach(bookmark => {
+            bookmark.addEventListener('click', function() {
+                this.classList.toggle('far');
+                this.classList.toggle('fas');
+            });
+        });
+
+        // SOS Emergency function
+        function triggerSOS() {
+            if (confirm('Are you sure you want to trigger emergency SOS? This will notify your trusted contacts and send your location.')) {
+                alert('Emergency SOS activated! Help is on the way. Your location has been shared with trusted contacts.');
+                // In a real app, this would send the user's location to emergency contacts
+            }
+        }
+
+        // Simulate wallet connection
+        document.querySelectorAll('.wallet-option').forEach(option => {
+            option.addEventListener('click', function() {
+                alert('Wallet connection successful! Your profile NFT will be created.');
+                closeModal('walletModal');
+                
+                // Update UI to show connected state
+                document.querySelector('.auth-buttons').innerHTML = `
+                    <div class="nft-badges">
+                        <div class="nft-badge nft-verified" title="Verified Profile"><i class="fas fa-check"></i></div>
+                    </div>
+                    <a href="#" class="btn btn-primary">My Profile</a>
+                `;
+            });
+        });
+
+        // Make message items clickable
+        document.querySelectorAll('.message-item').forEach(item => {
+            item.addEventListener('click', function() {
+                alert('Opening chat with ' + this.querySelector('.message-user').textContent);
+            });
+        });
+    </script>
+</body>
+</html>
